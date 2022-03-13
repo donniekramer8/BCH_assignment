@@ -59,7 +59,7 @@ while b < len(reflist):
 
 merged_list = []
 y = 0
-for x in list_chr_bins:
+for list in list_chr_bins:
     merged_list = merged_list + list_chr_bins[y]
     y += 1
 
@@ -80,11 +80,12 @@ while z < len(chrom_num):
     if z < 22:
         int_chrom_num.append(int(chrom_num[z]))
         z += 1
+    # else statement is for 'X', 'M', and 'Y' names
     else:
         int_chrom_num.append(chrom_num[z])
         z += 1
 
-# replace M,X,Y with 23,24,25 in dictionary to simplify for later use
+# replace M,X,Y with 23,24,25 in list/dictionary to simplify for later use
 int_chrom_num.remove('M')
 int_chrom_num.insert(22, 23)
 int_chrom_num.remove('X')
@@ -102,10 +103,10 @@ tuplelist = list(zip(int_chrom_num, int_chrom_length))
 LengthDict = dict(tuplelist)
 
 # function below creates a dataframe containing chr#, start_pos, end_pos, and # transpositions for each hotspot
-df0 = []
-df1 = []
-df2 = []
-df3 = []
+chr = []
+start_pos = []
+end_pos = []
+translocations = []
 z = 0
 t = 0
 while t < len(list_chr_bins):
@@ -114,17 +115,17 @@ while t < len(list_chr_bins):
             # if the bin is the last bin of the chromosome, return length of chromome as 'end_pos'
             # list_chr_bins[t][z] is the number of transpositions in a bin, aka: number of 'Junction' values within a bin's boundaries
             if int(pos*2000000 + 2000000) > LengthDict[t+1]:
-                df0.append(reflist[t])
-                df1.append(pos * 2000000)
-                df2.append(LengthDict[t+1])
-                df3.append(list_chr_bins[t][z])
+                chr.append(reflist[t])
+                start_pos.append(pos * 2000000)
+                end_pos.append(LengthDict[t+1])
+                translocations.append(list_chr_bins[t][z])
                 z += 1
             # if bin is not last bin of chromosome, simply add bin width to 'start_pos' to get 'end_pos'
             else:
-                df0.append(reflist[t])
-                df1.append(pos * 2000000)
-                df2.append(pos * 2000000 + 2000000)
-                df3.append(list_chr_bins[t][z])
+                chr.append(reflist[t])
+                start_pos.append(pos * 2000000)
+                end_pos.append(pos * 2000000 + 2000000)
+                translocations.append(list_chr_bins[t][z])
                 z += 1
         else:
             z += 1
@@ -134,30 +135,30 @@ while t < len(list_chr_bins):
     z = 0
 
 # display data frame
-data = {'start pos':df1, 'end pos':df2, 'translocations':df3}
-df = pd.DataFrame(data, index=df0)
+data = {'Start Position':start_pos, 'End Position':end_pos, 'Translocation Count':translocations}
+df = pd.DataFrame(data, index=chr)
 pd.set_option('display.max_rows', None)
-df.sort_values(by=['translocations'], inplace=True, ascending=False)
+df.sort_values(by=['Translocation Count'], inplace=True, ascending=False)
 print(df)
 
-# data visualization
+# create lists for data visualization
+i = 0
 unique_values = []
-for x in sorted(merged_list):
-    if x in unique_values:
+for value in sorted(merged_list):
+    if value in unique_values:
         i += 1
-    if x not in unique_values:
+    else:
         unique_values.append(x)
         i += 1
 
 i = 0
 number_occurences = []
-for x in merged_list:
+for value in range(len(unique_values)):
     k = unique_values[i]
     number_occurences.append(merged_list.count(k))
     i += 1
-    if i == len(unique_values):
-        break
 
+# create plot with matplotlib
 fig, ax = plt.subplots()
 plt.plot(unique_values, number_occurences, marker='o', markersize='3')
 plt.xlim(0,6000)
