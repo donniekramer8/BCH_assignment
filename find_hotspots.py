@@ -59,7 +59,7 @@ while b < len(reflist):
 
 merged_list = []
 y = 0
-for list in list_chr_bins:
+for list_ in list_chr_bins:
     merged_list = merged_list + list_chr_bins[y]
     y += 1
 
