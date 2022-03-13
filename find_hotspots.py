@@ -144,7 +144,7 @@ print(df)
 # create lists for data visualization
 i = 0
 unique_values = []
-for value in sorted(merged_list):
+for x in sorted(merged_list):
     if value in unique_values:
         i += 1
     else:
