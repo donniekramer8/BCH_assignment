@@ -145,7 +145,7 @@ print(df)
 i = 0
 unique_values = []
 for x in sorted(merged_list):
-    if value in unique_values:
+    if x in unique_values:
         i += 1
     else:
         unique_values.append(x)
